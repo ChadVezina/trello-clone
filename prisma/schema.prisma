@@ -1,0 +1,15 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Board {
+  id String @id @default(uuid()) @map("_id")
+  
+  title String
+}
