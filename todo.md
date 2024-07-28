@@ -7,3 +7,7 @@
 
 ### View Db
 - [ ] npx prisma studio
+
+
+
+settimeout => flust 7:28:19
