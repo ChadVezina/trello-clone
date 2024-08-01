@@ -11,12 +11,14 @@ import { Button } from "@/components/ui/button";
 import { createList } from "@/actions/create-list";
 import { FormInput } from "@/components/form/form-input";
 import { FormSubmit } from "@/components/form/form-submit";
+import { useProModal } from "@/hooks/use-pro-modal";
 
 import { ListWrapper } from "./list-wrapper";
 
 export const ListForm = () => {
   const router = useRouter();
   const params = useParams();
+  const proModal = useProModal();
 
   const formRef = useRef<ElementRef<"form">>(null);
   const inputRef = useRef<ElementRef<"input">>(null);
@@ -38,12 +40,18 @@ export const ListForm = () => {
 
   const { execute, fieldErrors } = useAction(createList, {
     onSuccess: (data) => {
-      toast.success(`List "${data.title}" created`);
+      toast.success(`List "${data.title}" created!`);
       disableEditing();
       router.refresh();
     },
     onError: (error) => {
-      toast.error(error);
+      if (error !== "") {
+        disableEditing();
+        toast.error(error);
+        proModal.onOpen();
+      } else {
+        enableEditing();
+      }
     },
   });
 

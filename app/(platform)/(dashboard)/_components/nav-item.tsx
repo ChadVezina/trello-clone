@@ -95,9 +95,9 @@ export const NavItem = ({
               pathname === route.href && "bg-sky-500/10 text-sky-700"
             )}
             variant="ghost"
-            >
-                {route.icon}
-                {route.label}
+          >
+            {route.icon}
+            {route.label}
           </Button>
         ))}
       </AccordionContent>

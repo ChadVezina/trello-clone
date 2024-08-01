@@ -38,8 +38,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     if (!isPro) {
-      await decrementAvailableCount();
+      //await decrementAvailableCount();
     }
+    await decrementAvailableCount();
 
     await createAuditLog({
       entityId: board.id,

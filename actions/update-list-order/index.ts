@@ -23,17 +23,19 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   let lists;
 
   try {
-    const transaction = items.map((list) => db.list.update({
-      where: {
-        id: list.id,
-        board: {
-          orgId,
+    const transaction = items.map((list) =>
+      db.list.update({
+        where: {
+          id: list.id,
+          board: {
+            orgId,
+          },
         },
-      },
-      data: {
-        order: list.order,
-      },
-    }));
+        data: {
+          order: list.order,
+        },
+      })
+    );
 
     lists = await db.$transaction(transaction);
   } catch (error) {

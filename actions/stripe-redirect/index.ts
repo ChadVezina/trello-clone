@@ -30,7 +30,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   try {
     const orgSubscription = await db.orgSubscription.findUnique({
       where: {
-        orgId,
+        orgId: userId,
       },
     });
 
@@ -66,7 +66,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
           },
         ],
         metadata: {
-          orgId,
+          orgId: userId,
         },
       });
 

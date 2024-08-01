@@ -10,6 +10,8 @@ import { createSafeAction } from "@/lib/create-safe-action";
 
 import { InputType, ReturnType } from "./types";
 import { CopyList } from "./schema";
+import { hasAvailableCountEdit } from "@/lib/org-limit";
+import { checkSubscription } from "@/lib/subscription";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -17,6 +19,16 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   if (!userId || !orgId) {
     return {
       error: "Unauthorized",
+    } as ReturnType;
+  }
+
+  const canEdit = await hasAvailableCountEdit();
+  const isPro = await checkSubscription();
+
+  if (!canEdit && !isPro) {
+    return {
+      error:
+        "You have reached your limit of free boards. Please upgrade to keep editing more.",
     } as ReturnType;
   }
 
@@ -38,7 +50,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       },
     });
 
-    if(!listToCopy) {
+    if (!listToCopy) {
       return {
         error: "List not found.",
       } as ReturnType;
@@ -87,15 +99,14 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       entityTitle: list.title,
       action: ACTION.CREATE,
     });
-  }
-  catch (error) {
+  } catch (error) {
     return {
-      error: "Failed to copy."+error,
+      error: "Failed to copy." + error,
     } as ReturnType;
   }
 
   revalidatePath(`/board/${boardId}`);
-  return {data: list};
+  return { data: list };
 };
 
 export const copyList = createSafeAction(CopyList, handler);

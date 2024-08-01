@@ -27,7 +27,8 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
   if (!canCreate && !isPro) {
     return {
-      error: "You have reached your limit of free boards. Please upgrade to create more.",
+      error:
+        "You have reached your limit of free boards. Please upgrade to create more.",
     } as ReturnType;
   }
 
@@ -64,8 +65,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     if (!isPro) {
-      await incrementAvailableCount();
+      //await incrementAvailableCount();
     }
+    await incrementAvailableCount();
 
     await createAuditLog({
       entityId: board.id,
@@ -73,8 +75,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       entityTitle: board.title,
       action: ACTION.CREATE,
     });
-  }
-  catch (error) {
+  } catch (error) {
     return {
       error: "Failed to create.",
     } as ReturnType;

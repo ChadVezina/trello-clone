@@ -1,4 +1,4 @@
 export const siteConfig = {
-    name: "Taskify",
-    description: "Marketing site",
+  name: "Taskify",
+  description: "Marketing site",
 };
