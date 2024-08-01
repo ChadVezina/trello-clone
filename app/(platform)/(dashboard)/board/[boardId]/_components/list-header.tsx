@@ -8,6 +8,7 @@ import { ElementRef, useRef, useState, useEffect } from "react"; //
 import { useAction } from "@/hooks/use-action";
 import { updateList } from "@/actions/update-list";
 import { FormInput } from "@/components/form/form-input";
+import { useProModal } from "@/hooks/use-pro-modal";
 
 import { ListOptions } from "./list-options";
 
@@ -17,6 +18,7 @@ interface ListHeaderProps {
 }
 
 export const ListHeader = ({ data, onAddCard }: ListHeaderProps) => {
+  const proModal = useProModal();
   const formRef = useRef<ElementRef<"form">>(null);
   const inputRef = useRef<ElementRef<"input">>(null);
 
@@ -36,14 +38,20 @@ export const ListHeader = ({ data, onAddCard }: ListHeaderProps) => {
     setIsEditing(false);
   };
 
-  const { execute } = useAction(updateList, {
+  const { execute, fieldErrors } = useAction(updateList, {
     onSuccess: (data) => {
       toast.success(`Renamed to "${data.title}"`);
       setTitle(data.title);
       disableEditing();
     },
     onError: (error) => {
-      toast.error(error);
+      if (error !== "") {
+        disableEditing();
+        toast.error(error);
+        proModal.onOpen();
+      } else {
+        enableEditing();
+      }
     },
   });
 
@@ -60,12 +68,12 @@ export const ListHeader = ({ data, onAddCard }: ListHeaderProps) => {
   };
 
   const onBlur = () => {
-    formRef.current?.requestSubmit();
+    disableEditing();
   };
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
-      formRef.current?.requestSubmit();
+      disableEditing();
     }
   };
 
@@ -80,6 +88,7 @@ export const ListHeader = ({ data, onAddCard }: ListHeaderProps) => {
           <FormInput
             ref={inputRef}
             onBlur={onBlur}
+            errors={fieldErrors}
             id="title"
             placeholder="Enter list title..."
             defaultValue={title}

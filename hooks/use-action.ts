@@ -37,9 +37,14 @@ export const useAction = <TInput, TOutput>(
         if (result.error) {
           setError(result.error);
           options.onError?.(result.error);
-        }
-
-        if (result.data) {
+        } else if (result.fieldErrors) {
+          /*
+          const error = Object.values<string[] | undefined>(
+            result.fieldErrors!
+          ).map((v) => v?.join(", ")).join("\n");
+          */
+          options.onError?.("");
+        } else if (result.data) {
           setData(result.data);
           options.onSuccess?.(result.data);
         }
@@ -49,12 +54,12 @@ export const useAction = <TInput, TOutput>(
       }
     },
     [action, options]
-    );
-    return {
-        execute,
-        fieldErrors,
-        error,
-        data,
-        isLoading,
-    };
+  );
+  return {
+    execute,
+    fieldErrors,
+    error,
+    data,
+    isLoading,
+  };
 };

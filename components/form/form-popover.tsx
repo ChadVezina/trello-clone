@@ -39,22 +39,25 @@ export const FormPopover = ({
 
   const { execute, fieldErrors } = useAction(createBoard, {
     onSuccess: (data) => {
-      toast.success("Board created");
+      toast.success(`Board "${data.title}" created!`);
       closeRef.current?.click();
       router.push(`/board/${data.id}`);
     },
     onError: (error) => {
-      toast.error(error);
-      proModal.onOpen();
+      if (error !== "") {
+        closeRef.current?.click();
+        toast.error(error);
+        proModal.onOpen();
+      }
     },
   });
-    
-    const onSubmit = (formData: FormData) => {
-      const title = formData.get("title") as string;
-      const image = formData.get("image") as string;
 
-        execute({ title, image });
-    };
+  const onSubmit = (formData: FormData) => {
+    const title = formData.get("title") as string;
+    const image = formData.get("image") as string;
+
+    execute({ title, image });
+  };
 
   return (
     <Popover>
@@ -79,7 +82,12 @@ export const FormPopover = ({
         <form action={onSubmit} className="space-y-4">
           <div className="space-y-4">
             <FormPicker id="image" errors={fieldErrors} />
-            <FormInput id="title" label="Board title" type="text" errors={fieldErrors} />
+            <FormInput
+              id="title"
+              label="Board title"
+              type="text"
+              errors={fieldErrors}
+            />
           </div>
           <FormSubmit className="w-full">Create</FormSubmit>
         </form>

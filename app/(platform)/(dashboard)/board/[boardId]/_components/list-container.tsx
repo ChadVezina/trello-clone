@@ -1,6 +1,6 @@
 "use client";
 
-import {toast } from "sonner";
+import { toast } from "sonner";
 import { ElementRef, useRef, useState, useEffect } from "react"; //
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 
@@ -33,7 +33,9 @@ export const ListContainer = ({ data, boardId }: ListContainerProps) => {
       toast.success("List reordered.");
     },
     onError: (error) => {
-      toast.error(error);
+      if (error !== "") {
+        toast.error(error);
+      }
     },
   });
 
@@ -42,7 +44,9 @@ export const ListContainer = ({ data, boardId }: ListContainerProps) => {
       toast.success("Card reordered.");
     },
     onError: (error) => {
-      toast.error(error);
+      if (error !== "") {
+        toast.error(error);
+      }
     },
   });
 
@@ -100,8 +104,12 @@ export const ListContainer = ({ data, boardId }: ListContainerProps) => {
         destList.cards = [];
       }
 
-      if(source.droppableId === destination.droppableId) {
-        const reorderedCards = reorder(sourceList.cards, source.index, destination.index);
+      if (source.droppableId === destination.droppableId) {
+        const reorderedCards = reorder(
+          sourceList.cards,
+          source.index,
+          destination.index
+        );
 
         reorderedCards.forEach((card, index) => {
           card.order = index;
@@ -114,8 +122,7 @@ export const ListContainer = ({ data, boardId }: ListContainerProps) => {
           items: reorderedCards,
           boardId,
         });
-      }
-      else {
+      } else {
         const [movedCard] = sourceList.cards.splice(source.index, 1);
 
         movedCard.listId = destination.droppableId;

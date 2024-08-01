@@ -1,9 +1,9 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 type ProModalStore = {
-    isOpen: boolean;
-    onOpen: () => void;
-    onClose: () => void;
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
 };
 
 export const useProModal = create<ProModalStore>((set) => ({

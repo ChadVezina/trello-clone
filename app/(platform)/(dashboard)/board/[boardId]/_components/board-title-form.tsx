@@ -1,28 +1,37 @@
 "use client";
 
-import {toast} from "sonner";
+import { toast } from "sonner";
 import { ElementRef, useRef, useState } from "react";
 import { Board } from "@prisma/client";
+import { useEventListener, useOnClickOutside } from "usehooks-ts"; //
 
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/form/form-input";
 import { updateBoard } from "@/actions/update-board";
 import { useAction } from "@/hooks/use-action";
+import { useProModal } from "@/hooks/use-pro-modal";
 
 interface BoardTitleFormProps {
   data: Board;
 }
 
 export const BoardTitleForm = ({ data }: BoardTitleFormProps) => {
-  const { execute } = useAction(updateBoard, {
+  const proModal = useProModal();
+  const { execute, fieldErrors } = useAction(updateBoard, {
     onSuccess: (data) => {
       toast.success(`Board "${data.title}" updated!`);
       setTitle(data.title);
       disableEditing();
     },
     onError: (error) => {
-      toast.error(error);
-    }
+      if (error !== "") {
+        disableEditing();
+        toast.error(error);
+        proModal.onOpen();
+      } else {
+        enableEditing();
+      }
+    },
   });
 
   const formRef = useRef<ElementRef<"form">>(null);
@@ -47,12 +56,20 @@ export const BoardTitleForm = ({ data }: BoardTitleFormProps) => {
   const onSubmit = (formData: FormData) => {
     const title = formData.get("title") as string;
 
-    execute({title, id: data.id});
+    execute({ title, id: data.id });
   };
 
   const onBlur = () => {
-    formRef.current?.requestSubmit();
+    disableEditing();
   };
+
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      disableEditing();
+    }
+  };
+
+  useEventListener("keydown", onKeyDown);
 
   if (isEditing) {
     return (
@@ -65,6 +82,7 @@ export const BoardTitleForm = ({ data }: BoardTitleFormProps) => {
           id="title"
           ref={inputRef}
           onBlur={onBlur}
+          errors={fieldErrors}
           defaultValue={title}
           className="text-lg font-bold px-[7px] py-1 h-7 bg-transparent focus-visible:outline-none focus-visible:ring-transparent border-none"
         />

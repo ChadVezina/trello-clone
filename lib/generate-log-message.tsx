@@ -3,7 +3,7 @@ import { ACTION, AuditLog } from "@prisma/client";
 export const generateLogMessage = (log: AuditLog) => {
   const { action, entityType, entityTitle } = log;
 
-    /*
+  /*
   switch (action) {
     case ACTION.CREATE:
       return `Created ${entityType.toLowerCase()}: "${entityTitle}"`;
@@ -20,7 +20,9 @@ export const generateLogMessage = (log: AuditLog) => {
     case ACTION.CREATE:
       return (
         <>
-          {action.toLowerCase()}{"d "}{entityType.toLowerCase()}:{" "}
+          {action.toLowerCase()}
+          {"d "}
+          {entityType.toLowerCase()}:{" "}
           <ins>
             <b>{entityTitle}</b>
           </ins>
@@ -29,7 +31,9 @@ export const generateLogMessage = (log: AuditLog) => {
     case ACTION.UPDATE:
       return (
         <>
-          {action.toLowerCase()}{"d "}{entityType.toLowerCase()}:{" "}
+          {action.toLowerCase()}
+          {"d "}
+          {entityType.toLowerCase()}:{" "}
           <mark>
             <b>{entityTitle}</b>
           </mark>
@@ -38,7 +42,9 @@ export const generateLogMessage = (log: AuditLog) => {
     case ACTION.DELETE:
       return (
         <>
-          {action.toLowerCase()}{"d "}{entityType.toLowerCase()}:{" "}
+          {action.toLowerCase()}
+          {"d "}
+          {entityType.toLowerCase()}:{" "}
           <del>
             <b>{entityTitle}</b>
           </del>

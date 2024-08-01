@@ -11,6 +11,7 @@ import { createCard } from "@/actions/create-card";
 import { Button } from "@/components/ui/button";
 import { FormSubmit } from "@/components/form/form-submit";
 import { FormTextarea } from "@/components/form/form-textarea";
+import { useProModal } from "@/hooks/use-pro-modal";
 
 interface CardFormProps {
   listId: string;
@@ -22,16 +23,23 @@ interface CardFormProps {
 export const CardForm = forwardRef<HTMLTextAreaElement, CardFormProps>(
   ({ listId, isEditing, enableEditing, disableEditing }, ref) => {
     const params = useParams();
+    const proModal = useProModal();
 
     const formRef = useRef<ElementRef<"form">>(null);
 
     const { execute, fieldErrors } = useAction(createCard, {
       onSuccess: (data) => {
-        toast.success(`Card "${data.title}" created`);
+        toast.success(`Card "${data.title}" created!`);
         formRef.current?.reset();
       },
       onError: (error) => {
-        toast.error(error);
+        if (error !== "") {
+          disableEditing();
+          toast.error(error);
+          proModal.onOpen();
+        } else {
+          enableEditing();
+        }
       },
     });
 

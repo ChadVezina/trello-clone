@@ -5,22 +5,25 @@ import { ElementRef, useRef, useState } from "react";
 import { Layout } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
 import { CardWithList } from "@/types";
 import { useAction } from "@/hooks/use-action";
 import { updateCard } from "@/actions/update-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FormInput } from "@/components/form/form-input";
+import { useProModal } from "@/hooks/use-pro-modal";
 
 interface HeaderProps {
   data: CardWithList;
 }
 
 export const Header = ({ data }: HeaderProps) => {
-    const queryClient = useQueryClient();
+  const proModal = useProModal();
+  const queryClient = useQueryClient();
   const params = useParams();
-  
-  const { execute } = useAction(updateCard, {
+
+  const { execute, fieldErrors } = useAction(updateCard, {
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["card", data.id],
@@ -32,19 +35,40 @@ export const Header = ({ data }: HeaderProps) => {
 
       toast.success(`Renamed to "${data.title}"`);
       setTitle(data.title);
+      disableEditing();
     },
     onError: (error) => {
-      toast.error(error);
-    }
+      if (error !== "") {
+        disableEditing();
+        toast.error(error);
+        proModal.onOpen();
+      } else {
+        enableEditing();
+      }
+    },
   });
 
   const inputRef = useRef<ElementRef<"input">>(null);
 
-    const [title, setTitle] = useState(data.title);
-    
-    const onBlur = () => {
-        inputRef.current?.form?.requestSubmit();
-    };
+  const [title, setTitle] = useState(data.title);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const enableEditing = () => {
+    setIsEditing(true);
+
+    setTimeout(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    });
+  };
+
+  const disableEditing = () => {
+    setIsEditing(false);
+  };
+
+  const onBlur = () => {
+    disableEditing();
+  };
 
   const onSubmit = (formData: FormData) => {
     const title = formData.get("title") as string;
@@ -54,25 +78,35 @@ export const Header = ({ data }: HeaderProps) => {
       return;
     }
 
-    execute({ title, boardId, id: data.id, });
+    execute({ title, boardId, id: data.id });
   };
 
   return (
     <div className="flex items-start gap-x-3 mb-6 w-full">
       <Layout className="h-5 w-5 mt-1 text-neutral-700" />
       <div className="w-full">
-        <form action={onSubmit}>
-                  <FormInput
-                      ref={inputRef}
-                      onBlur={onBlur}
-            id="title"
-            defaultValue={title}
-            className="font-semibold text-xl px-1 text-neutral-700 bg-transparent border-transparent relative -left-1.5 w-[95%] focus-visible:bg-white focus-visible:border-input mb-0.5 truncate"
-          />
-              </form>
-              <p className="text-sm text-muted-foreground">
-                  in list <span className="underline">{data.list.title}</span>
-              </p>
+        {isEditing ? (
+          <form action={onSubmit}>
+            <FormInput
+              ref={inputRef}
+              onBlur={onBlur}
+              errors={fieldErrors}
+              id="title"
+              defaultValue={title}
+              className="font-semibold text-xl px-1 text-neutral-700 bg-transparent border-transparent relative -left-1.5 w-[95%] focus-visible:bg-white focus-visible:border-input mb-0.5 truncate"
+            />
+          </form>
+        ) : (
+          <div
+            onClick={enableEditing}
+            className="w-full text-sm px-2.5 py-1 h-7 font-medium border-transparent"
+          >
+            {title}
+          </div>
+        )}
+        <p className="text-sm text-muted-foreground">
+          in list <span className="underline">{data.list.title}</span>
+        </p>
       </div>
     </div>
   );

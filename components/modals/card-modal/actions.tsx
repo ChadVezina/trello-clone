@@ -1,6 +1,6 @@
 "use client";
 
-import {toast} from "sonner";
+import { toast } from "sonner";
 import { Copy, Trash } from "lucide-react";
 import { useParams } from "next/navigation";
 
@@ -11,6 +11,7 @@ import { copyCard } from "@/actions/copy-card";
 import { deleteCard } from "@/actions/delete-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { useProModal } from "@/hooks/use-pro-modal";
 
 interface ActionsProps {
   data: CardWithList;
@@ -19,27 +20,37 @@ interface ActionsProps {
 export const Actions = ({ data }: ActionsProps) => {
   const params = useParams();
   const cardModal = useCardModal();
+  const proModal = useProModal();
 
-  const { execute: executeCopyCard, isLoading: isLoadingCopy } =
-    useAction(copyCard, {
+  const { execute: executeCopyCard, isLoading: isLoadingCopy } = useAction(
+    copyCard,
+    {
       onSuccess: (data) => {
         toast.success(`Card "${data.title}" copied`);
         cardModal.onClose();
       },
       onError: (error) => {
-        toast.error(error);
+        if (error !== "") {
+          toast.error(error);
+          proModal.onOpen();
+        }
       },
-    });
-  const { execute: executeDeleteCard, isLoading: isLoadingDelete } =
-    useAction(deleteCard, {
+    }
+  );
+  const { execute: executeDeleteCard, isLoading: isLoadingDelete } = useAction(
+    deleteCard,
+    {
       onSuccess: (data) => {
         toast.success(`Card "${data.title}" deleted`);
         cardModal.onClose();
       },
       onError: (error) => {
-        toast.error(error);
+        if (error !== "") {
+          toast.error(error);
+        }
       },
-    });
+    }
+  );
 
   const onCopy = () => {
     const boardId = params.boardId as string;

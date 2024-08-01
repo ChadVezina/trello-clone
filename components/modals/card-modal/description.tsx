@@ -14,6 +14,7 @@ import { CardWithList } from "@/types";
 import { FormTextarea } from "@/components/form/form-textarea";
 import { FormSubmit } from "@/components/form/form-submit";
 import { Button } from "@/components/ui/button";
+import { useProModal } from "@/hooks/use-pro-modal";
 
 interface DescriptionProps {
   data: CardWithList;
@@ -22,6 +23,7 @@ interface DescriptionProps {
 export const Description = ({ data }: DescriptionProps) => {
   const queryClient = useQueryClient();
   const params = useParams();
+  const proModal = useProModal();
 
   const formRef = useRef<ElementRef<"form">>(null);
   const textareaRef = useRef<ElementRef<"textarea">>(null);
@@ -55,17 +57,16 @@ export const Description = ({ data }: DescriptionProps) => {
       disableEditing();
     },
     onError: (error) => {
-      toast.error(error);
+      if (error !== "") {
+        disableEditing();
+        toast.error(error);
+        proModal.onOpen();
+      } else {
+        enableEditing();
+      }
     },
   });
 
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      disableEditing();
-    }
-  };
-
-  useEventListener("keydown", onKeyDown);
   useOnClickOutside(formRef, disableEditing);
 
   const onSubmit = (formData: FormData) => {

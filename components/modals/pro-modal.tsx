@@ -17,7 +17,10 @@ export const ProModal = () => {
       window.location.href = data;
     },
     onError: (error) => {
-      toast.error(error);
+      if (error !== "") {
+        toast.error(error);
+        proModal.onOpen();
+      }
     },
   });
 

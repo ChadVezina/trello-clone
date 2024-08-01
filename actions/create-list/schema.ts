@@ -9,5 +9,5 @@ export const CreateList = z.object({
     .min(3, {
       message: "Title is too short.",
     }),
-    boardId: z.string(),
+  boardId: z.string(),
 });

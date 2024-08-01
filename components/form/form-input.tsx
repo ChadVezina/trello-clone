@@ -64,11 +64,8 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             className={cn("text-sm px-2 py-1 h-7", className)}
             aria-describedby={`${id}-error`}
           />
-            </div>
-            <FormErrors
-                id={id}
-                errors={errors}
-            />
+        </div>
+        <FormErrors id={id} errors={errors} />
       </div>
     );
   }
