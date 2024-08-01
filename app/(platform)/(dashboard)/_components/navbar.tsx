@@ -18,7 +18,8 @@ export const Navbar = () => {
         <FormPopover align="start" side="bottom" sideOffset={18}>
           <Button
             size="sm"
-            className="rounded-sm hidden md:block h-auto py-1.5 px-2 bg-blue-900 border-none hover:bg-blue-700 text-white"
+            variant="primary"
+            className="rounded-sm hidden md:block h-auto py-1.5 px-2"
           >
             Create
           </Button>
@@ -26,7 +27,7 @@ export const Navbar = () => {
         <FormPopover>
           <Button
             size="sm"
-            className="rounded-sm block md:hidden bg-blue-900 border-none hover:bg-blue-700"
+            className="rounded-sm block md:hidden"
           >
             <Plus className="h-4 w-4" />
           </Button>
