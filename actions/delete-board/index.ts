@@ -2,7 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import {redirect} from "next/navigation";
+import { redirect } from "next/navigation";
 import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 import { db } from "@/lib/db";
@@ -12,6 +12,7 @@ import { createSafeAction } from "@/lib/create-safe-action";
 import { InputType, ReturnType } from "./types";
 import { DeleteBoard } from "./schema";
 import { decrementAvailableCount } from "@/lib/org-limit";
+import { checkSubscription } from "@/lib/subscription";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -21,6 +22,8 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       error: "Unauthorized",
     } as ReturnType;
   }
+
+  const isPro = await checkSubscription();
 
   const { id } = data;
 
@@ -34,7 +37,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       },
     });
 
-    await decrementAvailableCount();
+    if (!isPro) {
+      await decrementAvailableCount();
+    }
 
     await createAuditLog({
       entityId: board.id,
@@ -42,8 +47,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       entityTitle: board.title,
       action: ACTION.DELETE,
     });
-  }
-  catch (error) {
+  } catch (error) {
     return {
       error: "Failed to delete.",
     } as ReturnType;
