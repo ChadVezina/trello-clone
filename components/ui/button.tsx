@@ -20,6 +20,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         primary: "bg-blue-900 text-white hover:bg-blue-700", // blue
         transparent: "bg-transparent text-white hover:bg-white/20",
+        gray: "bg-neutral-200 text-secondary-foreground hover:bg-neutral-300",
 
         add: "bg-green-900 text-white hover:bg-green-700", // green
         edit: "bg-purple-900 text-white hover:bg-purple-700", // purple
@@ -29,6 +30,7 @@ const buttonVariants = cva(
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
+        inline: "h-auto px-2 py-1.5 text-sm",
       },
     },
     defaultVariants: {
