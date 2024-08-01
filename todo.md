@@ -1,0 +1,9 @@
+# TODO
+
+## Commands
+
+### Run App
+- [ ] npm run dev
+
+### View Db
+- [ ] npx prisma studio
